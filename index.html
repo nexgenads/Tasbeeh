@@ -7,6 +7,9 @@
   <meta name="description" content="একদম সহজ, দ্রুত, এবং সুন্দর তাসবিহ কাউন্টার। অফলাইন ও প্রাইভেট—সব ডেটা আপনার ব্রাউজারেই সেভ থাকে।" />
   <meta name="theme-color" content="#059669" />
 
+  <!-- Favicon (inline SVG, no assets needed) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs/%3E%3Ccircle cx='32' cy='32' r='28' fill='%2310b981'/%3E%3Ccircle cx='32' cy='12' r='4' fill='white'/%3E%3Ccircle cx='46' cy='18' r='4' fill='white'/%3E%3Ccircle cx='52' cy='32' r='4' fill='white'/%3E%3Ccircle cx='46' cy='46' r='4' fill='white'/%3E%3Ccircle cx='32' cy='52' r='4' fill='white'/%3E%3Ccircle cx='18' cy='46' r='4' fill='white'/%3E%3Ccircle cx='12' cy='32' r='4' fill='white'/%3E%3Ccircle cx='18' cy='18' r='4' fill='white'/%3E%3C/svg%3E" />
+
   <!-- Inter font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,30 +51,60 @@
 
         <!-- Body -->
         <div class="p-6 sm:p-8">
+          <!-- Label -->
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-200" for="labelInput">যিকিরের নাম (ঐচ্ছিক)</label>
+          <input id="labelInput" type="text" inputmode="text" placeholder="যেমন: সুবহানাল্লাহ" class="mt-2 w-full rounded-xl border border-slate-300/80 dark:border-white/10 bg-white/80 dark:bg-white/5 px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300/70" />
+
           <!-- Count display -->
-          <div class="text-center">
+          <div class="mt-6 text-center">
             <div id="count" class="text-7xl sm:text-8xl font-bold tracking-tight text-slate-900 dark:text-white tabular-nums select-none" aria-live="polite" aria-atomic="true">0</div>
             <p class="mt-2 text-xs text-slate-600/90 dark:text-slate-300/80">ট্যাপ করুন বা <kbd class="px-1.5 py-0.5 rounded bg-slate-900/5 dark:bg-white/10 text-[11px]">Space</kbd> চাপুন</p>
+            <div id="roundsWrap" class="mt-1 text-xs text-slate-700 dark:text-slate-300 hidden"><span>রাউন্ড: </span><span id="rounds">0</span></div>
+          </div>
+
+          <!-- Progress to target -->
+          <div id="progressWrap" class="mt-5 hidden">
+            <div class="flex items-center justify-between text-xs text-slate-600 dark:text-slate-300">
+              <span id="progressLabel">টার্গেট অগ্রগতি</span>
+              <span id="progressText">0 / 0</span>
+            </div>
+            <div class="mt-2 h-2 w-full rounded-full bg-slate-200/70 dark:bg-white/10">
+              <div id="progressBar" class="h-2 rounded-full bg-emerald-500" style="width:0%"></div>
+            </div>
           </div>
 
           <!-- Main count button -->
-          <div class="mt-8 flex justify-center">
+          <div class="mt-6 flex justify-center">
             <button id="countBtn" type="button" class="group w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-emerald-600 text-white text-2xl sm:text-3xl font-semibold shadow-glow ring-1 ring-black/5 focus:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300 dark:focus-visible:ring-emerald-500/60 active:scale-95 transition-transform duration-100 relative">
               <span class="pointer-events-none">গণা</span>
-              <!-- subtle ripple -->
               <span class="absolute inset-0 rounded-full border-2 border-white/20 group-active:scale-110 transition-transform duration-200"></span>
             </button>
           </div>
 
           <!-- Actions -->
-          <div class="mt-6 flex items-center justify-center gap-3">
-            <button id="resetBtn" type="button" class="px-4 py-2 rounded-xl border border-slate-300/70 dark:border-white/10 bg-white/70 dark:bg-white/5 text-slate-800 dark:text-slate-200 hover:bg-white/90 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-rose-300/60 text-sm font-semibold">
-              রিসেট
+          <div class="mt-6 grid grid-cols-2 gap-3">
+            <button id="resetBtn" type="button" class="px-4 py-2 rounded-xl border border-slate-300/70 dark:border-white/10 bg-white/70 dark:bg-white/5 text-slate-800 dark:text-slate-200 hover:bg-white/90 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-rose-300/60 text-sm font-semibold">রিসেট</button>
+            <button id="soundToggle" type="button" class="px-4 py-2 rounded-xl border border-slate-300/70 dark:border-white/10 bg-white/70 dark:bg-white/5 text-slate-800 dark:text-slate-200 hover:bg-white/90 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300/60 text-sm font-semibold flex items-center justify-center gap-2">
+              <span id="soundStatus">সাউন্ড: বন্ধ</span>
             </button>
           </div>
 
+          <!-- Target selector -->
+          <div class="mt-6">
+            <p class="text-xs font-medium text-slate-700 dark:text-slate-200 mb-2">টার্গেট নির্বাচন</p>
+            <div class="flex flex-wrap items-center gap-2">
+              <button data-target="0" class="targetBtn px-3 py-1.5 rounded-lg bg-white/80 dark:bg-white/5 border border-slate-300/70 dark:border-white/10 text-sm text-slate-800 dark:text-slate-200 hover:bg-white/90">No target</button>
+              <button data-target="33" class="targetBtn px-3 py-1.5 rounded-lg bg-white/80 dark:bg-white/5 border border-slate-300/70 dark:border-white/10 text-sm text-slate-800 dark:text-slate-200 hover:bg-white/90">33</button>
+              <button data-target="99" class="targetBtn px-3 py-1.5 rounded-lg bg-white/80 dark:bg-white/5 border border-slate-300/70 dark:border-white/10 text-sm text-slate-800 dark:text-slate-200 hover:bg-white/90">99</button>
+              <div class="flex items-center gap-2">
+                <input id="customTarget" type="number" min="1" placeholder="Custom" class="w-24 rounded-lg border border-slate-300/70 dark:border-white/10 bg-white/80 dark:bg-white/5 px-3 py-1.5 text-sm text-slate-900 dark:text-white focus:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300/70" />
+                <button id="setCustomTarget" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-500">Set</button>
+              </div>
+            </div>
+          </div>
+
           <!-- Tips -->
-          <p class="mt-4 text-center text-xs text-slate-500 dark:text-slate-400">শর্টকাট: <kbd class="px-1.5 py-0.5 rounded bg-slate-900/5 dark:bg-white/10 text-[11px]">R</kbd> = রিসেট</p>
+          <p class="mt-5 text-center text-xs text-slate-500 dark:text-slate-400">শর্টকাট: <kbd class="px-1.5 py-0.5 rounded bg-slate-900/5 dark:bg-white/10 text-[11px]">Space</kbd> = গণা, <kbd class="px-1.5 py-0.5 rounded bg-slate-900/5 dark:bg-white/10 text-[11px]">R</kbd> = রিসেট</p>
         </div>
       </section>
 
@@ -86,7 +119,7 @@
     <div class="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
     <div role="dialog" aria-modal="true" aria-labelledby="modalTitle" class="relative w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 border border-white/20 dark:border-white/10 shadow-2xl p-6">
       <h2 id="modalTitle" class="text-lg font-semibold text-slate-900 dark:text-white">রিসেট করতে চান?</h2>
-      <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">সব গণনা <strong>০</strong> হয়ে যাবে। এই কাজটি ফিরিয়ে নেওয়া যাবে না।</p>
+      <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">সব গণনা <strong>০</strong> হয়ে যাবে। টার্গেট/লেবেল সেটিংস থাকবে।</p>
       <div class="mt-5 flex justify-end gap-2">
         <button id="cancelReset" class="px-4 py-2 rounded-xl border border-slate-300/70 dark:border-white/10 bg-white/70 dark:bg-white/5 text-slate-800 dark:text-slate-200 hover:bg-white/90 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-slate-300/60 text-sm font-semibold">বাতিল</button>
         <button id="confirmReset" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white shadow-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-rose-300/60 text-sm font-semibold">হ্যাঁ, রিসেট</button>
@@ -94,105 +127,162 @@
     </div>
   </div>
 
+  <!-- Toast -->
+  <div id="toast" class="fixed inset-x-0 top-3 z-[60] mx-auto hidden w-fit rounded-xl bg-emerald-600 text-white px-4 py-2 shadow-xl">টার্গেট পূর্ণ হয়েছে! 🎉</div>
+
   <script>
     (function() {
-      const STORAGE_KEY = 'tasbeeh-count-v1';
-      const countEl = document.getElementById('count');
-      const countBtn = document.getElementById('countBtn');
-      const resetBtn = document.getElementById('resetBtn');
-      const modal = document.getElementById('modal');
-      const cancelReset = document.getElementById('cancelReset');
-      const confirmReset = document.getElementById('confirmReset');
-      const yearEl = document.getElementById('year');
+      const STORAGE = {
+        COUNT: 'tasbeeh-count-v1',
+        LABEL: 'tasbeeh-label-v1',
+        TARGET: 'tasbeeh-target-v1',
+        SOUND: 'tasbeeh-sound-v1',
+        ROUNDS: 'tasbeeh-rounds-v1'
+      };
 
-      let memoryFallback = 0;
+      const $ = (id) => document.getElementById(id);
+      const countEl = $('count');
+      const countBtn = $('countBtn');
+      const resetBtn = $('resetBtn');
+      const modal = $('modal');
+      const cancelReset = $('cancelReset');
+      const confirmReset = $('confirmReset');
+      const yearEl = $('year');
+      const labelInput = $('labelInput');
+      const progressWrap = $('progressWrap');
+      const progressBar = $('progressBar');
+      const progressText = $('progressText');
+      const roundsWrap = $('roundsWrap');
+      const roundsEl = $('rounds');
+      const soundToggle = $('soundToggle');
+      const soundStatus = $('soundStatus');
+      const customTarget = $('customTarget');
+      const setCustomTarget = $('setCustomTarget');
+      const toast = $('toast');
+
+      const targetButtons = Array.from(document.querySelectorAll('.targetBtn'));
+
+      let memoryFallback = { count: 0, label: '', target: 0, sound: false, rounds: 0 };
 
       const canStore = () => {
-        try {
-          const t = '__t__';
-          localStorage.setItem(t, '1');
-          localStorage.removeItem(t);
-          return true;
-        } catch (_) {
-          return false;
-        }
+        try { localStorage.setItem('__t__','1'); localStorage.removeItem('__t__'); return true; } catch (_) { return false; }
       };
 
-      const getCount = () => {
-        if (canStore()) {
-          const v = localStorage.getItem(STORAGE_KEY);
-          return v ? parseInt(v, 10) || 0 : 0;
-        }
-        return memoryFallback;
-      };
+      const get = (key, def) => canStore() ? (JSON.parse(localStorage.getItem(key)) ?? def) : (memoryFallback[key.toLowerCase()] ?? def);
+      const set = (key, val) => { if (canStore()) localStorage.setItem(key, JSON.stringify(val)); else memoryFallback[key.toLowerCase()] = val; };
 
-      const setCount = (val) => {
-        if (canStore()) {
-          localStorage.setItem(STORAGE_KEY, String(val));
-        } else {
-          memoryFallback = val;
-        }
-        render(val);
-      };
+      const getCount = () => get(STORAGE.COUNT, 0);
+      const setCount = (v) => { set(STORAGE.COUNT, v); renderCount(v); updateProgress(); };
+      const getLabel = () => get(STORAGE.LABEL, '');
+      const setLabel = (v) => { set(STORAGE.LABEL, v); };
+      const getTarget = () => get(STORAGE.TARGET, 0);
+      const setTarget = (v) => { set(STORAGE.TARGET, v); updateProgress(); };
+      const getSound = () => get(STORAGE.SOUND, false);
+      const setSound = (v) => { set(STORAGE.SOUND, v); renderSound(v); };
+      const getRounds = () => get(STORAGE.ROUNDS, 0);
+      const setRounds = (v) => { set(STORAGE.ROUNDS, v); renderRounds(v); };
 
-      const render = (val) => {
+      const renderCount = (val) => {
         countEl.textContent = String(val);
-        // pulse animation
-        countEl.animate([
-          { transform: 'scale(1)', filter: 'blur(0px)' },
-          { transform: 'scale(1.06)', filter: 'blur(0px)' },
-          { transform: 'scale(1)', filter: 'blur(0px)' }
-        ], { duration: 130, easing: 'ease-out' });
+        countEl.animate([{ transform:'scale(1)' },{ transform:'scale(1.06)' },{ transform:'scale(1)'}], { duration: 130, easing: 'ease-out' });
+      };
+      const renderSound = (on) => { soundStatus.textContent = on ? 'সাউন্ড: চালু' : 'সাউন্ড: বন্ধ'; };
+      const renderRounds = (n) => { roundsEl.textContent = String(n); roundsWrap.classList.toggle('hidden', n === 0); };
+
+      // simple beep (no assets)
+      const beep = (freq = 660, ms = 45, vol = 0.03) => {
+        if (!getSound()) return;
+        try {
+          const ac = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ac.createOscillator();
+          const gain = ac.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.value = vol;
+          osc.connect(gain).connect(ac.destination);
+          osc.start();
+          setTimeout(() => { osc.stop(); ac.close(); }, ms);
+        } catch(_) {}
       };
 
-      // Initialize
+      const showToast = (msg) => {
+        toast.textContent = msg;
+        toast.classList.remove('hidden');
+        toast.animate([{transform:'translateY(-10px)',opacity:0},{transform:'translateY(0)',opacity:1}],{duration:160,easing:'ease-out'});
+        setTimeout(() => {
+          toast.animate([{opacity:1},{opacity:0}],{duration:180,easing:'ease-in'}).onfinish = () => toast.classList.add('hidden');
+        }, 1000);
+      };
+
+      const updateProgress = () => {
+        const tgt = Number(getTarget());
+        const c = Number(getCount());
+        if (!tgt || tgt <= 0) { progressWrap.classList.add('hidden'); return; }
+        const pct = Math.min(100, Math.floor((c % tgt) / tgt * 100));
+        progressWrap.classList.remove('hidden');
+        progressBar.style.width = pct + '%';
+        progressText.textContent = `${c % tgt} / ${tgt}`;
+      };
+
+      const onCount = () => {
+        const next = getCount() + 1;
+        setCount(next);
+        if (navigator.vibrate) navigator.vibrate(10);
+        beep(660, 40, 0.03);
+
+        const tgt = Number(getTarget());
+        if (tgt > 0 && next % tgt === 0) {
+          // completed a round
+          setRounds(getRounds() + 1);
+          beep(440, 120, 0.05);
+          if (navigator.vibrate) navigator.vibrate([30, 40, 30]);
+          showToast('টার্গেট পূর্ণ হয়েছে! 🎉');
+        }
+      };
+
       const init = () => {
         yearEl.textContent = new Date().getFullYear();
-        render(getCount());
-      };
-
-      const openModal = () => {
-        modal.classList.remove('hidden');
-        // focus the confirm for quick enter
-        setTimeout(() => confirmReset.focus(), 0);
-      };
-      const closeModal = () => {
-        modal.classList.add('hidden');
+        renderCount(getCount());
+        labelInput.value = getLabel();
+        renderSound(getSound());
+        renderRounds(getRounds());
+        updateProgress();
       };
 
       // Events
-      countBtn.addEventListener('click', () => {
-        const next = getCount() + 1;
-        setCount(next);
-        if (navigator.vibrate) { navigator.vibrate(10); }
-      });
+      countBtn.addEventListener('click', onCount);
 
-      resetBtn.addEventListener('click', openModal);
-      cancelReset.addEventListener('click', closeModal);
+      resetBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+      cancelReset.addEventListener('click', () => modal.classList.add('hidden'));
       confirmReset.addEventListener('click', () => {
         setCount(0);
-        closeModal();
+        setRounds(0);
+        modal.classList.add('hidden');
+      });
+
+      soundToggle.addEventListener('click', () => setSound(!getSound()));
+
+      labelInput.addEventListener('input', (e) => setLabel(e.target.value || ''));
+
+      targetButtons.forEach(btn => btn.addEventListener('click', () => {
+        const v = Number(btn.getAttribute('data-target')) || 0;
+        setTarget(v);
+        updateProgress();
+      }));
+
+      setCustomTarget.addEventListener('click', () => {
+        const v = Math.max(1, Number(customTarget.value || '0'));
+        setTarget(v);
+        updateProgress();
+        showToast('Custom টার্গেট সেট হয়েছে');
       });
 
       // Keyboard shortcuts
       window.addEventListener('keydown', (e) => {
-        // Space/Enter to count
-        if (e.code === 'Space' || e.key === ' ') {
-          e.preventDefault();
-          countBtn.click();
-        }
-        if (e.key === 'Enter' && (document.activeElement === countBtn || document.activeElement === document.body)) {
-          e.preventDefault();
-          countBtn.click();
-        }
-        // R to reset prompt
-        if ((e.key === 'r' || e.key === 'R')) {
-          openModal();
-        }
-        // Escape to close modal
-        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-          closeModal();
-        }
+        if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); onCount(); }
+        if (e.key === 'Enter' && (document.activeElement === countBtn || document.activeElement === document.body)) { e.preventDefault(); onCount(); }
+        if (e.key === 'r' || e.key === 'R') { modal.classList.remove('hidden'); }
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) { modal.classList.add('hidden'); }
       }, { passive: false });
 
       init();

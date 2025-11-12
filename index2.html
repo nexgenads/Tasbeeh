@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>তাসবিহ কাউন্টার • Tasbeeh Counter</title>
+  <meta name="description" content="একদম সহজ, দ্রুত, এবং সুন্দর তাসবিহ কাউন্টার। অফলাইন ও প্রাইভেট—সব ডেটা আপনার ব্রাউজারেই সেভ থাকে।" />
+  <meta name="theme-color" content="#059669" />
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Noto Sans", "Ubuntu", "Cantarell", "Arial", "sans-serif"] },
+          boxShadow: {
+            glow: "0 10px 25px -5px rgba(16,185,129,0.35), 0 8px 10px -6px rgba(16,185,129,0.3)",
+          }
+        }
+      },
+      darkMode: 'media'
+    }
+  </script>
+  <style>
+    html, body { height: 100%; }
+  </style>
+</head>
+<body class="font-sans antialiased min-h-screen bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 selection:bg-emerald-200/60 selection:text-emerald-900">
+  <main class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+      <section aria-label="Tasbeeh Counter Card" class="relative rounded-3xl border border-white/20 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur-lg shadow-2xl">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-5 sm:p-7 border-b border-black/5 dark:border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-glow" aria-hidden="true">﷽</span>
+            <div>
+              <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">তাসবিহ কাউন্টার</h1>
+              <p class="text-xs text-slate-600/90 dark:text-slate-300/80">অফলাইন ও প্রাইভেট — কোনও সার্ভার নেই</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 sm:p-8">
+          <!-- Count display -->
+          <div class="text-center">
+            <div id="count" class="text-7xl sm:text-8xl font-bold tracking-tight text-slate-900 dark:text-white tabular-nums select-none" aria-live="polite" aria-atomic="true">0</div>
+            <p class="mt-2 text-xs text-slate-600/90 dark:text-slate-300/80">ট্যাপ করুন বা <kbd class="px-1.5 py-0.5 rounded bg-slate-900/5 dark:bg-white/10 text-[11px]">Space</kbd> চাপুন</p>
+          </div>
+
+          <!-- Main count button -->
+          <div class="mt-8 flex justify-center">
+            <button id="countBtn" type="button" class="group w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-emerald-600 text-white text-2xl sm:text-3xl font-semibold shadow-glow ring-1 ring-black/5 focus:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300 dark:focus-visible:ring-emerald-500/60 active:scale-95 transition-transform duration-100 relative">
+              <span class="pointer-events-none">গণা</span>
+              <!-- subtle ripple -->
+              <span class="absolute inset-0 rounded-full border-2 border-white/20 group-active:scale-110 transition-transform duration-200"></span>
+            </button>
+          </div>
+
+          <!-- Actions -->
+          <div class="mt-6 flex items-center justify-center gap-3">
+            <button id="resetBtn" type="button" class="px-4 py-2 rounded-xl border border-slate-300/70 dark:border-white/10 bg-white/70 dark:bg-white/5 text-slate-800 dark:text-slate-200 hover:bg-white/90 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-rose-300/60 text-sm font-semibold">
+              রিসেট
+            </button>
+          </div>
+
+          <!-- Tips -->
+          <p class="mt-4 text-center text-xs text-slate-500 dark:text-slate-400">শর্টকাট: <kbd class="px-1.5 py-0.5 rounded bg-slate-900/5 dark:bg-white/10 text-[11px]">R</kbd> = রিসেট</p>
+        </div>
+      </section>
+
+      <footer class="mt-4 text-center text-[11px] text-white/90">
+        <span>© <span id="year"></span> Tasbeeh Counter • GitHub Pages ready</span>
+      </footer>
+    </div>
+  </main>
+
+  <!-- Reset confirm modal -->
+  <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
+    <div role="dialog" aria-modal="true" aria-labelledby="modalTitle" class="relative w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 border border-white/20 dark:border-white/10 shadow-2xl p-6">
+      <h2 id="modalTitle" class="text-lg font-semibold text-slate-900 dark:text-white">রিসেট করতে চান?</h2>
+      <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">সব গণনা <strong>০</strong> হয়ে যাবে। এই কাজটি ফিরিয়ে নেওয়া যাবে না।</p>
+      <div class="mt-5 flex justify-end gap-2">
+        <button id="cancelReset" class="px-4 py-2 rounded-xl border border-slate-300/70 dark:border-white/10 bg-white/70 dark:bg-white/5 text-slate-800 dark:text-slate-200 hover:bg-white/90 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-slate-300/60 text-sm font-semibold">বাতিল</button>
+        <button id="confirmReset" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white shadow-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-rose-300/60 text-sm font-semibold">হ্যাঁ, রিসেট</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const STORAGE_KEY = 'tasbeeh-count-v1';
+      const countEl = document.getElementById('count');
+      const countBtn = document.getElementById('countBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const modal = document.getElementById('modal');
+      const cancelReset = document.getElementById('cancelReset');
+      const confirmReset = document.getElementById('confirmReset');
+      const yearEl = document.getElementById('year');
+
+      let memoryFallback = 0;
+
+      const canStore = () => {
+        try {
+          const t = '__t__';
+          localStorage.setItem(t, '1');
+          localStorage.removeItem(t);
+          return true;
+        } catch (_) {
+          return false;
+        }
+      };
+
+      const getCount = () => {
+        if (canStore()) {
+          const v = localStorage.getItem(STORAGE_KEY);
+          return v ? parseInt(v, 10) || 0 : 0;
+        }
+        return memoryFallback;
+      };
+
+      const setCount = (val) => {
+        if (canStore()) {
+          localStorage.setItem(STORAGE_KEY, String(val));
+        } else {
+          memoryFallback = val;
+        }
+        render(val);
+      };
+
+      const render = (val) => {
+        countEl.textContent = String(val);
+        // pulse animation
+        countEl.animate([
+          { transform: 'scale(1)', filter: 'blur(0px)' },
+          { transform: 'scale(1.06)', filter: 'blur(0px)' },
+          { transform: 'scale(1)', filter: 'blur(0px)' }
+        ], { duration: 130, easing: 'ease-out' });
+      };
+
+      // Initialize
+      const init = () => {
+        yearEl.textContent = new Date().getFullYear();
+        render(getCount());
+      };
+
+      const openModal = () => {
+        modal.classList.remove('hidden');
+        // focus the confirm for quick enter
+        setTimeout(() => confirmReset.focus(), 0);
+      };
+      const closeModal = () => {
+        modal.classList.add('hidden');
+      };
+
+      // Events
+      countBtn.addEventListener('click', () => {
+        const next = getCount() + 1;
+        setCount(next);
+        if (navigator.vibrate) { navigator.vibrate(10); }
+      });
+
+      resetBtn.addEventListener('click', openModal);
+      cancelReset.addEventListener('click', closeModal);
+      confirmReset.addEventListener('click', () => {
+        setCount(0);
+        closeModal();
+      });
+
+      // Keyboard shortcuts
+      window.addEventListener('keydown', (e) => {
+        // Space/Enter to count
+        if (e.code === 'Space' || e.key === ' ') {
+          e.preventDefault();
+          countBtn.click();
+        }
+        if (e.key === 'Enter' && (document.activeElement === countBtn || document.activeElement === document.body)) {
+          e.preventDefault();
+          countBtn.click();
+        }
+        // R to reset prompt
+        if ((e.key === 'r' || e.key === 'R')) {
+          openModal();
+        }
+        // Escape to close modal
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      }, { passive: false });
+
+      init();
+    })();
+  </script>
+</body>
+</html>
